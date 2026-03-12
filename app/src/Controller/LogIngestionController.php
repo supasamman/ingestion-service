@@ -4,8 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\Contract\LogIngestionServiceInterface;
+use App\DTO\LogBatchRequestDTO;
 use App\Enum\ResponseStatus;
-use App\Service\Log\LogIngestionService;
 use App\Service\Log\LogValidatorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -22,7 +23,7 @@ final class LogIngestionController extends AbstractController
         #[Autowire('%log_batch_max_size%')]
         private readonly int $maxBatchSize,
         private readonly LogValidatorService $validator,
-        private readonly LogIngestionService $ingestion,
+        private readonly LogIngestionServiceInterface $ingestion,
     )
     {}
 
@@ -30,18 +31,32 @@ final class LogIngestionController extends AbstractController
     public function ingest(Request $request, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $logs = $data['logs'];
 
-        if (count($logs) > $this->maxBatchSize) {
+        $batchRequest = new LogBatchRequestDTO($data['logs'] ?? null);
+
+        $violations = $validator->validate($batchRequest);
+        if (count($violations) > 0) {
+            return $this->json(
+                [
+                    'status' => ResponseStatus::ERROR->value,
+                    'errors' => ['Invalid request body'],
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        if (count($batchRequest->logs) > $this->maxBatchSize) {
             return $this->json(
                 [
                     'status' => ResponseStatus::ERROR->value,
                     'errors' => ["Maximum {$this->maxBatchSize} logs per batch"],
                 ],
-                Response::HTTP_BAD_REQUEST);
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
-        [$validated, $errors] = $this->validator->validate($logs);
+
+        [$validated, $errors] = $this->validator->validate($batchRequest->logs);
 
         if (!empty($errors)) {
             return $this->json(
@@ -49,7 +64,8 @@ final class LogIngestionController extends AbstractController
                     'status' => ResponseStatus::ERROR->value,
                     'errors' => $errors
                 ],
-                Response::HTTP_BAD_REQUEST);
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         try {
@@ -71,7 +87,8 @@ final class LogIngestionController extends AbstractController
                     'status' => ResponseStatus::ERROR->value,
                     'message' => 'Service unavailable'
                 ],
-                Response::HTTP_SERVICE_UNAVAILABLE);
+                Response::HTTP_SERVICE_UNAVAILABLE
+            );
         }
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Service\Log;
 
-
+use App\Contract\LogIngestionServiceInterface;
 use App\Message\LogBatchMessage;
 use DateTimeImmutable;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
@@ -12,7 +12,7 @@ use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
-final readonly class LogIngestionService
+final readonly class LogIngestionService implements LogIngestionServiceInterface
 {
     public function __construct(
         private MessageBusInterface $bus,
