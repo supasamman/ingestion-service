@@ -12,6 +12,11 @@ endif
 
 .PHONY: up php-rebuild php phpstan cs-fix rector k6
 
+init:
+	cp .env.example .env
+	docker compose up -d --build
+	docker exec -it symfony_php composer install
+
 up:
 	docker compose up -d
 	@echo
@@ -28,20 +33,5 @@ php-rebuild:
 php:
 	docker compose exec php bash
 
-phpstan:
-	docker compose exec php php tools/phpstan/vendor/bin/phpstan analyse -c phpstan.neon.dist
-
-cs-fix:
-	docker compose exec php php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix
-
-rector:
-	docker compose exec php php tools/rector/vendor/bin/rector process
-
-k6:
-	docker compose run --rm k6
-
-worker:
-	docker compose exec php php bin/console messenger:consume async -vv
-
-dmm:
-	docker compose exec php php bin/console doctrine:migration:migrate -n
+test:
+	docker exec -it symfony_php php bin/phpunit
