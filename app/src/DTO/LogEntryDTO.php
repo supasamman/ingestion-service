@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\DTO;
 
@@ -26,5 +26,6 @@ final readonly class LogEntryDTO
 
         public ?array $context = null,
         public ?string $trace_id = null,
-    ) {}
+    ) {
+    }
 }

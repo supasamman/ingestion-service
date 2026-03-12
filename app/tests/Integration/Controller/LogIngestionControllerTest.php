@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Integration\Controller;
 
 use App\Contract\LogIngestionServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class LogIngestionControllerTest extends WebTestCase
 {
@@ -13,9 +14,9 @@ class LogIngestionControllerTest extends WebTestCase
     {
         return [
             'timestamp' => '2026-02-26T10:30:45Z',
-            'level'     => 'error',
-            'service'   => 'auth-service',
-            'message'   => 'Auth failed',
+            'level' => 'error',
+            'service' => 'auth-service',
+            'message' => 'Auth failed',
         ];
     }
 
@@ -47,7 +48,7 @@ class LogIngestionControllerTest extends WebTestCase
             json_encode(['foo' => 'bar'])
         );
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 
     public function testInvalidLevelReturns400(): void
@@ -62,6 +63,6 @@ class LogIngestionControllerTest extends WebTestCase
             json_encode(['logs' => [$log]])
         );
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 }

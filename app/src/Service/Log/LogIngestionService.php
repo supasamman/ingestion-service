@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Service\Log;
 
@@ -17,8 +17,8 @@ final readonly class LogIngestionService implements LogIngestionServiceInterface
     public function __construct(
         private MessageBusInterface $bus,
         private LogPriorityService $priorityService,
-    )
-    {}
+    ) {
+    }
 
     /*
      * @param array<LogEntryDTO> $logs
@@ -28,13 +28,12 @@ final readonly class LogIngestionService implements LogIngestionServiceInterface
      */
     public function ingest(array $logs): string
     {
-        $batchId = 'batch_' . Uuid::v7()->toRfc4122();
+        $batchId = 'batch_'.Uuid::v7()->toRfc4122();
 
         $priority = $this->priorityService->getBatchPriority($logs);
 
         $this->bus->dispatch(
-            new LogBatchMessage
-            (
+            new LogBatchMessage(
                 batchId: $batchId,
                 logs: $logs,
                 publishedAt: new DateTimeImmutable(),

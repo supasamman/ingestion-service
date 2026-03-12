@@ -1,68 +1,38 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Controller;
 
 use App\Contract\LogIngestionServiceInterface;
-use App\DTO\LogBatchRequestDTO;
 use App\Enum\ResponseStatus;
+use App\Request\IngestLogsRequest;
 use App\Service\Log\LogValidatorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class LogIngestionController extends AbstractController
 {
     public function __construct(
-        #[Autowire('%log_batch_max_size%')]
-        private readonly int $maxBatchSize,
         private readonly LogValidatorService $validator,
         private readonly LogIngestionServiceInterface $ingestion,
-    )
-    {}
+    ) {
+    }
 
     #[Route('api/logs/ingest', name: 'app_log_ingestion', methods: ['POST'])]
-    public function ingest(Request $request, ValidatorInterface $validator): JsonResponse
+    public function ingest(#[MapRequestPayload(validationFailedStatusCode: 400)] IngestLogsRequest $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-
-        $batchRequest = new LogBatchRequestDTO($data['logs'] ?? null);
-
-        $violations = $validator->validate($batchRequest);
-        if (count($violations) > 0) {
-            return $this->json(
-                [
-                    'status' => ResponseStatus::ERROR->value,
-                    'errors' => ['Invalid request body'],
-                ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
-        if (count($batchRequest->logs) > $this->maxBatchSize) {
-            return $this->json(
-                [
-                    'status' => ResponseStatus::ERROR->value,
-                    'errors' => ["Maximum {$this->maxBatchSize} logs per batch"],
-                ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
-
-        [$validated, $errors] = $this->validator->validate($batchRequest->logs);
+        [$validated, $errors] = $this->validator->validate($request->logs);
 
         if (!empty($errors)) {
             return $this->json(
                 [
                     'status' => ResponseStatus::ERROR->value,
-                    'errors' => $errors
+                    'errors' => $errors,
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -76,16 +46,14 @@ final class LogIngestionController extends AbstractController
                     'status' => ResponseStatus::ACCEPTED->value,
                     'batchId' => $batchId,
                     'logs_count' => count($validated),
-
                 ],
-                RESPONSE::HTTP_ACCEPTED
+                Response::HTTP_ACCEPTED
             );
-
         } catch (ExceptionInterface $e) {
             return $this->json(
                 [
                     'status' => ResponseStatus::ERROR->value,
-                    'message' => 'Service unavailable'
+                    'message' => 'Service unavailable',
                 ],
                 Response::HTTP_SERVICE_UNAVAILABLE
             );

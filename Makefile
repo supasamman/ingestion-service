@@ -35,3 +35,6 @@ php:
 
 test:
 	docker exec -it symfony_php php bin/phpunit
+
+cs-fix:
+	docker compose exec php php vendor/bin/php-cs-fixer fix
