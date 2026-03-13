@@ -33,7 +33,7 @@ final class LogValidatorTest extends TestCase
             ],
         ]);
 
-        $this->assertCount(1, $dtos);
+        self::assertCount(1, $dtos);
     }
 
     public function testMissingRequiredFieldsReturnsErrors(): void

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 #[AsEventListener]
-class MessengerExceptionListener
+final class MessengerExceptionListener
 {
     public function __invoke(ExceptionEvent $event): void
     {

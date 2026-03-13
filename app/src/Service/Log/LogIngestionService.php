@@ -21,17 +21,16 @@ final readonly class LogIngestionService implements LogIngestionServiceInterface
         private MessageBusInterface $bus,
         private LogPriorityService $priorityService,
         private LogValidatorService $validator,
-    ) {
-    }
+    ) {}
 
-    /*
+    /**
      * @param array<LogEntryDTO> $logs
-    */
+     */
     public function ingest(array $logs): string
     {
         $validated = $this->validator->validate(logs: $logs);
 
-        $batchId = 'batch_'.Uuid::v7()->toRfc4122();
+        $batchId = 'batch_' . Uuid::v7()->toRfc4122();
 
         foreach (array_chunk(array: $validated, length: $this->batchSize) as $chunk) {
             $priority = $this->priorityService->getChunkPriority(dtos: $chunk);

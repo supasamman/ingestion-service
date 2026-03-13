@@ -13,8 +13,7 @@ final readonly class LogValidatorService
 {
     public function __construct(
         private ValidatorInterface $validator,
-    ) {
-    }
+    ) {}
 
     public function validate(array $logs): array
     {
@@ -24,8 +23,9 @@ final readonly class LogValidatorService
         foreach ($logs as $i => $log) {
             $level = LogLevel::tryFrom(value: $log['level'] ?? '');
 
-            if (null === $level) {
-                $errors[] = "logs[$i].level: Invalid value \"{$log['level']}\"";
+            if ($level === null) {
+                $errors[] = "logs[{$i}].level: Invalid value \"{$log['level']}\"";
+
                 continue;
             }
 
@@ -39,7 +39,7 @@ final readonly class LogValidatorService
             );
 
             foreach ($this->validator->validate($dtos) as $dto) {
-                $errors[] = "logs[$i].{$dto->getPropertyPath()}: {$dto->getMessage()}";
+                $errors[] = "logs[{$i}].{$dto->getPropertyPath()}: {$dto->getMessage()}";
             }
         }
 

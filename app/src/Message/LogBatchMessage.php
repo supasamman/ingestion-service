@@ -10,6 +10,5 @@ final readonly class LogBatchMessage
         public string $batchId,
         public array $logs,
         public \DateTimeImmutable $publishedAt,
-    ) {
-    }
+    ) {}
 }

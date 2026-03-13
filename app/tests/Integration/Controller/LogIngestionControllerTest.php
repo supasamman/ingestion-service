@@ -8,7 +8,7 @@ use App\Contract\LogIngestionServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-class LogIngestionControllerTest extends WebTestCase
+final class LogIngestionControllerTest extends WebTestCase
 {
     private function getValidLog(): array
     {
@@ -22,30 +22,38 @@ class LogIngestionControllerTest extends WebTestCase
 
     public function testValidRequestReturns202(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $mock = $this->createStub(LogIngestionServiceInterface::class);
+        $mock = self::createStub(LogIngestionServiceInterface::class);
         $mock->method('ingest')->willReturn('batch_123');
         $client->getContainer()->set(LogIngestionServiceInterface::class, $mock);
 
-        $client->request(method: 'POST', uri: '/api/logs/ingest', parameters: [], files: [],
+        $client->request(
+            method: 'POST',
+            uri: '/api/logs/ingest',
+            parameters: [],
+            files: [],
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(value: ['logs' => [$this->getValidLog()]])
+            content: json_encode(value: ['logs' => [$this->getValidLog()]]),
         );
 
         $this->assertResponseStatusCodeSame(202);
         $response = json_decode(json: $client->getResponse()->getContent(), associative: true);
-        $this->assertEquals('accepted', $response['status']);
-        $this->assertEquals(1, $response['logs_count']);
+        self::assertEquals('accepted', $response['status']);
+        self::assertEquals(1, $response['logs_count']);
     }
 
     public function testMissingLogsKeyReturns400(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $client->request(method: 'POST', uri: '/api/logs/ingest', parameters: [], files: [],
+        $client->request(
+            method: 'POST',
+            uri: '/api/logs/ingest',
+            parameters: [],
+            files: [],
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(value: ['foo' => 'bar'])
+            content: json_encode(value: ['foo' => 'bar']),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -53,14 +61,18 @@ class LogIngestionControllerTest extends WebTestCase
 
     public function testInvalidLevelReturns400(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $log = $this->getValidLog();
         $log['level'] = 'invalid_level';
 
-        $client->request(method: 'POST', uri: '/api/logs/ingest', parameters: [], files: [],
+        $client->request(
+            method: 'POST',
+            uri: '/api/logs/ingest',
+            parameters: [],
+            files: [],
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(value: ['logs' => [$log]])
+            content: json_encode(value: ['logs' => [$log]]),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);

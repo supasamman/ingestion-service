@@ -13,18 +13,13 @@ final readonly class LogEntryDTO
         #[Assert\NotBlank]
         #[Assert\DateTime(\DateTimeInterface::ATOM)]
         public string $timestamp,
-
         #[Assert\NotBlank]
         public LogLevel $level,
-
         #[Assert\NotBlank]
         public string $service,
-
         #[Assert\NotBlank]
         public string $message,
-
         public ?array $context = null,
         public ?string $trace_id = null,
-    ) {
-    }
+    ) {}
 }

@@ -17,8 +17,7 @@ final class LogIngestionController extends AbstractController
 {
     public function __construct(
         private readonly LogIngestionServiceInterface $ingestion,
-    ) {
-    }
+    ) {}
 
     #[Route('api/logs/ingest', name: 'app_log_ingestion', methods: ['POST'])]
     public function ingest(#[MapRequestPayload(validationFailedStatusCode: Response::HTTP_BAD_REQUEST)] IngestLogsRequest $request): JsonResponse
@@ -29,9 +28,9 @@ final class LogIngestionController extends AbstractController
             data: [
                 'status' => ResponseStatus::ACCEPTED->value,
                 'batchId' => $batchId,
-                'logs_count' => count(value: $request->logs),
+                'logs_count' => \count(value: $request->logs),
             ],
-            status: Response::HTTP_ACCEPTED
+            status: Response::HTTP_ACCEPTED,
         );
     }
 }

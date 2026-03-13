@@ -1,17 +1,23 @@
 <?php
 
-$finder = (new PhpCsFixer\Finder())
+declare(strict_types=1);
+
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+use PHPyh\CodingStandard\PhpCsFixerCodingStandard;
+
+$finder = new Finder()
     ->in(__DIR__)
     ->exclude('var')
-    ->notPath([
-        'config/bundles.php',
-        'config/reference.php',
-    ])
-;
+    ->append([
+        __FILE__,
+        __DIR__ . '/bin/console',
+    ]);
 
-return (new PhpCsFixer\Config())
-    ->setRules([
-        '@Symfony' => true,
-    ])
-    ->setFinder($finder)
-;
+$config = new Config()
+    ->setCacheFile(__DIR__ . '/var/.php-cs-fixer.cache')
+    ->setFinder($finder);
+
+new PhpCsFixerCodingStandard()->applyTo($config);
+
+return $config;
