@@ -5,6 +5,8 @@ services:
       dockerfile: docker/php/Dockerfile
       target: dev
     container_name: symfony_php
+    env_file:
+      - .env
     restart: unless-stopped
     volumes:
       - ./app:/var/www/app:rw
@@ -49,9 +51,9 @@ services:
     container_name: symfony_rabbitmq
     restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: app
-      RABBITMQ_DEFAULT_PASS: app
-      RABBITMQ_DEFAULT_VHOST: /
+      RABBITMQ_DEFAULT_USER: "${APP_RABBITMQ_USER:-app}"
+      RABBITMQ_DEFAULT_PASS: "${APP_RABBITMQ_PASSWORD:-app}"
+      RABBITMQ_DEFAULT_VHOST: "${APP_RABBITMQ_VHOST:-/}"
     ports:
       - "${APP_RABBITMQ_PORT:-5672}:5672"
       - "${APP_RABBITMQ_MGMT_PORT:-15672}:15672"

@@ -2,7 +2,7 @@ framework:
     messenger:
         transports:
             async:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                dsn: "amqp://%env(APP_RABBITMQ_USER)%:%env(APP_RABBITMQ_PASSWORD)%@%env(APP_RABBITMQ_HOST)%:%env(APP_RABBITMQ_PORT)%/%env(APP_RABBITMQ_VHOST)%"
                 options:
                     exchange:
                         name: logs.ingest
