@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Log;
 
 use App\Contract\LogIngestionServiceInterface;
+use App\DTO\LogEntryDTO;
 use App\Exception\MessageBusException;
 use App\Message\LogBatchMessage;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
