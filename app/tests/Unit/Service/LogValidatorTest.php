@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Exception\LogValidationException;
 use App\Service\Log\LogValidatorService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
@@ -18,12 +19,12 @@ final class LogValidatorTest extends TestCase
             ->enableAttributeMapping()
             ->getValidator();
 
-        $this->validator = new LogValidatorService($validator);
+        $this->validator = new LogValidatorService(validator: $validator);
     }
 
-    public function testValidLogReturnsAtosAndNoErrors(): void
+    public function testValidLogReturnsDtosWithoutErrors(): void
     {
-        [$dtos, $errors] = $this->validator->validate([
+        $dtos = $this->validator->validate(logs: [
             [
                 'timestamp' => '2026-02-26T10:30:45Z',
                 'level' => 'error',
@@ -32,22 +33,23 @@ final class LogValidatorTest extends TestCase
             ],
         ]);
 
-        $this->assertEmpty($errors);
         $this->assertCount(1, $dtos);
     }
 
     public function testMissingRequiredFieldsReturnsErrors(): void
     {
-        [$dtos, $errors] = $this->validator->validate([
+        $this->expectException(LogValidationException::class);
+
+        $this->validator->validate(logs: [
             ['level' => 'error'],
         ]);
-
-        $this->assertNotEmpty($errors);
     }
 
     public function testInvalidLevelReturnsError(): void
     {
-        [$dtos, $errors] = $this->validator->validate([
+        $this->expectException(LogValidationException::class);
+
+        $this->validator->validate(logs: [
             [
                 'timestamp' => '2026-02-26T10:30:45Z',
                 'level' => 'invalid_level',
@@ -55,7 +57,5 @@ final class LogValidatorTest extends TestCase
                 'message' => 'test',
             ],
         ]);
-
-        $this->assertNotEmpty($errors);
     }
 }

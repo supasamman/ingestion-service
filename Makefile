@@ -36,5 +36,11 @@ php:
 test:
 	docker exec -it symfony_php php bin/phpunit
 
+phpstan:
+	docker compose exec php php vendor/bin/phpstan analyse -c phpstan.neon.dist
+
 cs-fix:
 	docker compose exec php php vendor/bin/php-cs-fixer fix
+
+rector:
+	docker compose exec php php vendor/bin/rector process

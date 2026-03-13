@@ -2,12 +2,12 @@
 
 use Symfony\Component\Dotenv\Dotenv;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+require dirname(path: __DIR__).'/vendor/autoload.php';
 
-if (method_exists(Dotenv::class, 'bootEnv')) {
-    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+if (method_exists(object_or_class: Dotenv::class, method: 'bootEnv')) {
+    (new Dotenv())->bootEnv(path: dirname(path: __DIR__).'/.env');
 }
 
 if ($_SERVER['APP_DEBUG']) {
-    umask(0000);
+    umask(mask: 0000);
 }

@@ -6,6 +6,7 @@ namespace App\Service\Log;
 
 use App\DTO\LogEntryDTO;
 use App\Enum\LogLevel;
+use App\Exception\LogValidationException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class LogValidatorService
@@ -21,7 +22,7 @@ final readonly class LogValidatorService
         $errors = [];
 
         foreach ($logs as $i => $log) {
-            $level = LogLevel::tryFrom($log['level'] ?? '');
+            $level = LogLevel::tryFrom(value: $log['level'] ?? '');
 
             if (null === $level) {
                 $errors[] = "logs[$i].level: Invalid value \"{$log['level']}\"";
@@ -42,6 +43,10 @@ final readonly class LogValidatorService
             }
         }
 
-        return [$dtos, $errors];
+        if (!empty($errors)) {
+            throw new LogValidationException(errors: $errors);
+        }
+
+        return $dtos;
     }
 }

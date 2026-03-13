@@ -13,6 +13,6 @@ final readonly class LogBatchMessageHandler
     public function __invoke(LogBatchMessage $message): void
     {
         // пока просто логируем что получили
-        dump($message->batchId, count($message->logs));
+        dump(vars1: $message->batchId, vars2: count(value: $message->logs));
     }
 }

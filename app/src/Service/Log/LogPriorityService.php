@@ -13,7 +13,7 @@ final readonly class LogPriorityService
         'debug' => 1,
     ];
 
-    public function getBatchPriority(array $dtos): int
+    public function getChunkPriority(array $dtos): int
     {
         $max = 0;
         foreach ($dtos as $dto) {

@@ -98,6 +98,12 @@
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/yaml" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/theseer/tokenizer" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/phpstan/extension-installer" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/phpstan/phpstan" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/phpstan/phpstan-symfony" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/rector/rector" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/savinmikhail/add_named_arguments_rector" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symplify/rule-doc-generator-contracts" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

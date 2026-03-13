@@ -28,13 +28,13 @@ class LogIngestionControllerTest extends WebTestCase
         $mock->method('ingest')->willReturn('batch_123');
         $client->getContainer()->set(LogIngestionServiceInterface::class, $mock);
 
-        $client->request('POST', '/api/logs/ingest', [], [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['logs' => [$this->getValidLog()]])
+        $client->request(method: 'POST', uri: '/api/logs/ingest', parameters: [], files: [],
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(value: ['logs' => [$this->getValidLog()]])
         );
 
         $this->assertResponseStatusCodeSame(202);
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = json_decode(json: $client->getResponse()->getContent(), associative: true);
         $this->assertEquals('accepted', $response['status']);
         $this->assertEquals(1, $response['logs_count']);
     }
@@ -43,9 +43,9 @@ class LogIngestionControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('POST', '/api/logs/ingest', [], [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['foo' => 'bar'])
+        $client->request(method: 'POST', uri: '/api/logs/ingest', parameters: [], files: [],
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(value: ['foo' => 'bar'])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -58,9 +58,9 @@ class LogIngestionControllerTest extends WebTestCase
         $log = $this->getValidLog();
         $log['level'] = 'invalid_level';
 
-        $client->request('POST', '/api/logs/ingest', [], [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['logs' => [$log]])
+        $client->request(method: 'POST', uri: '/api/logs/ingest', parameters: [], files: [],
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(value: ['logs' => [$log]])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
